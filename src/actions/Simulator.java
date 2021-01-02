@@ -2,10 +2,13 @@ package actions;
 
 import entities.Consumer;
 import entities.Distributor;
+import entities.Producer;
 import factory.FactorySingleton;
 import io.ConsumerInput;
 import io.DistributorChanges;
+import io.MonthlyStatsOutput;
 import io.MonthlyUpdatesInput;
+import io.ProducerChanges;
 import utils.Contract;
 
 import java.util.Comparator;
@@ -13,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static utils.Constants.CONSUMER;
+import static utils.Constants.PRODUCTION_COST_PERCENTAGE;
 import static utils.Constants.PROFIT_PERCENTAGE;
 import static utils.Constants.DEBT_PERCENTAGE;
 
@@ -28,13 +32,26 @@ public final class Simulator {
      * @param numberOfTurns The number of rounds
      * @param consumers The list of consumers to be executed on
      * @param distributors The list of distributors to be executed on
+     * @param producers The list of producers to be executed on
      * @param monthlyUpdatesInputs The list that contains each round update
      */
     public static void startSimulation(final int numberOfTurns,
                                        final List<Consumer> consumers,
                                        final List<Distributor> distributors,
+                                       final List<Producer> producers,
                                        final List<MonthlyUpdatesInput> monthlyUpdatesInputs) {
-        for (int i = 0; i <= numberOfTurns; i++) {
+        // each distributor chooses or updates the producers
+        chooseProducers(distributors, producers);
+
+        computeProductionCost(distributors);
+
+        computeContractCostList(0, distributors);
+
+        chooseContracts(consumers, distributors, getBestDistributor(distributors));
+
+        payTotalCost(consumers, distributors);
+
+        for (int i = 1; i <= numberOfTurns; i++) {
             // add new consumers or update distributors cost based on the round update input
             doUpdate(i, consumers, distributors, monthlyUpdatesInputs);
 
@@ -46,6 +63,50 @@ public final class Simulator {
 
             // each distributor should now pay it's monthly expenses
             payTotalCost(consumers, distributors);
+
+
+            // change the producer prices
+            for (ProducerChanges producerChanges : monthlyUpdatesInputs.get(i - 1)
+                                                                        .getProducerChanges()) {
+                if (producerChanges != null) {
+                    producers.get(producerChanges.getId())
+                            .setEnergyPerDistributor(producerChanges.getEnergyPerDistributor(),
+                                    producers);
+                }
+            }
+
+            computeProductionCost(distributors);
+
+            // remove the bankrupt distr
+
+            for (Producer it : producers) {
+                if (it != null) {
+                    Iterator<Distributor> iter = it.getObservers().iterator();
+
+                    while (iter.hasNext()) {
+                        Distributor current = iter.next();
+
+                        if (it.getObservers().get(current.getId()).isBankrupt()) {
+                            iter.remove();
+                        }
+                    }
+                }
+            }
+
+            // save the amount of distributors each producer has
+            for (Producer it : producers) {
+                it.getMonthlyStats().add(new MonthlyStatsOutput(i));
+
+                if (it.getObservers() != null) {
+                    for (Distributor disIt : it.getObservers()) {
+                        if (disIt != null) {
+                            it.getMonthlyStats().get(i - 1)
+                                    .getDistributorsIds().add(disIt.getId());
+                        }
+                    }
+                }
+
+            }
         }
     }
 
@@ -82,7 +143,7 @@ public final class Simulator {
                                                                 0));
             }
 
-            // change the prices
+            // change the distributor prices
             for (DistributorChanges costChanges : monthUpdate.getDistributorChanges()) {
                 if (costChanges != null) {
                     // set the new infrastructure cost
@@ -93,6 +154,40 @@ public final class Simulator {
 //                    distributors.get(costChanges.getId())
 //                                .setProductionCost(costChanges.getProductionCost());
                 }
+            }
+        }
+    }
+
+    /**
+     * Each distributor will choose it's producers
+     *
+     * @param distributors The list of distributors
+     * @param producers The list of producers
+     */
+    public static void chooseProducers(final List<Distributor> distributors,
+                                       final List<Producer> producers) {
+        for (Distributor iterator : distributors) {
+            iterator.executeStrategy(producers);
+        }
+    }
+
+    /**
+     * Compute the production cost for each distributor
+     *
+     * @param distributors The list of distributors
+     */
+    public static void computeProductionCost(final List<Distributor> distributors) {
+        for (Distributor iterator : distributors) {
+            if (!iterator.isBankrupt()) {
+                double cost = 0;
+
+                for (Producer producerIterator : iterator.getProducers()) {
+                    cost += producerIterator.getEnergyPerDistributor()
+                            * producerIterator.getPriceKW();
+                }
+
+                iterator.setProductionCost(Math.round(Math.floor(cost
+                        * PRODUCTION_COST_PERCENTAGE)));
             }
         }
     }

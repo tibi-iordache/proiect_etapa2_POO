@@ -1,6 +1,7 @@
 package entities;
 
 import io.MonthlyStatsOutput;
+import observer.CustomObserver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,12 @@ public final class Producer extends Entity {
 
     private int maxDistributors;
 
+    /*
+    * Needed for the output
+    * */
     private List<MonthlyStatsOutput> monthlyStats;
+
+    private List<Distributor> observers;
 
     public Producer() {
     }
@@ -35,6 +41,27 @@ public final class Producer extends Entity {
         this.maxDistributors = maxDistributors;
 
         this.monthlyStats = new ArrayList<MonthlyStatsOutput>();
+
+        this.observers = new ArrayList<Distributor>();
+    }
+
+    /**
+     * TODO
+     * @param observer
+     */
+    public void addObserver(final Distributor observer) {
+        this.observers.add(observer);
+    }
+
+    /**
+     * TODO
+     *
+     * @param producerList
+     */
+    public void notifyAllObservers(final List<Producer> producerList) {
+        for (Distributor observer : observers) {
+            observer.update(producerList);
+        }
     }
 
     public EnergyType getEnergyType() {
@@ -57,8 +84,16 @@ public final class Producer extends Entity {
         return energyPerDistributor;
     }
 
-    public void setEnergyPerDistributor(final double energyPerDistributor) {
-        this.energyPerDistributor = energyPerDistributor;
+    /**
+     * TODO
+     * @param energyAmount
+     * @param producerList
+     */
+    public void setEnergyPerDistributor(final double energyAmount,
+                                        final List<Producer> producerList) {
+        this.energyPerDistributor = energyAmount;
+
+        notifyAllObservers(producerList);
     }
 
     public int getMaxDistributors() {
@@ -75,5 +110,13 @@ public final class Producer extends Entity {
 
     public void setMonthlyStats(final List<MonthlyStatsOutput> monthlyStats) {
         this.monthlyStats = monthlyStats;
+    }
+
+    public List<Distributor> getObservers() {
+        return observers;
+    }
+
+    public void setObservers(List<Distributor> observers) {
+        this.observers = observers;
     }
 }

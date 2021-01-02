@@ -1,9 +1,16 @@
 package entities;
 
+import observer.CustomObserver;
+import strategies.EnergyChoiceStrategy;
+import strategies.EnergyChoiceStrategyType;
+import strategies.GreenStrategy;
+import strategies.PriceStrategy;
+import strategies.QuantityStrategy;
 import utils.Contract;
 import java.util.ArrayList;
+import java.util.List;
 
-public final class Distributor extends Entity {
+public final class Distributor extends Entity implements CustomObserver {
     /*
     * The length of the distributor's contract
     * */
@@ -34,9 +41,25 @@ public final class Distributor extends Entity {
     * */
     private boolean isBankrupt;
 
+    /*
+    * Required energy
+    * */
     private double energyNeededKW;
 
+    /*
+    * The distributor strategy (needed for the output)
+    * */
     private String producerStrategy;
+
+    /*
+    * The current producers of the distributor
+    * */
+    private List<Producer> producers;
+
+    /*
+    * The distributor strategy
+    * */
+    private EnergyChoiceStrategy strategy;
 
     public Distributor() {
     }
@@ -56,11 +79,48 @@ public final class Distributor extends Entity {
 
         this.productionCost = productionCost;
 
-        contractList = new ArrayList<Contract>();
+        this.contractList = new ArrayList<Contract>();
 
         this.energyNeededKW = energyNeededKW;
 
         this.producerStrategy = producerStrategy;
+
+        this.producers = new ArrayList<Producer>();
+
+        if (EnergyChoiceStrategyType.valueOf(producerStrategy)
+                .equals(EnergyChoiceStrategyType.GREEN)) {
+            this.strategy = new GreenStrategy();
+        }
+
+        if (EnergyChoiceStrategyType.valueOf(producerStrategy)
+                .equals(EnergyChoiceStrategyType.PRICE)) {
+            this.strategy = new PriceStrategy();
+        }
+
+        if (EnergyChoiceStrategyType.valueOf(producerStrategy)
+                .equals(EnergyChoiceStrategyType.QUANTITY)) {
+            this.strategy = new QuantityStrategy();
+        }
+    }
+
+    /**
+     * TODO
+     *
+     * @param producersList
+     */
+    public void executeStrategy(List<Producer> producersList) {
+        this.strategy.chooseProducer(this, producersList);
+    }
+
+    /**
+     * TODO
+     * @param producersList
+     */
+    @Override
+    public void update(List<Producer> producersList) {
+        if (!isBankrupt) {
+            executeStrategy(producersList);
+        }
     }
 
     public int getContractLength() {
@@ -125,5 +185,13 @@ public final class Distributor extends Entity {
 
     public void setProducerStrategy(final String producerStrategy) {
         this.producerStrategy = producerStrategy;
+    }
+
+    public List<Producer> getProducers() {
+        return producers;
+    }
+
+    public void setProducers(final List<Producer> producers) {
+        this.producers = producers;
     }
 }

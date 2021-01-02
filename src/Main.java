@@ -9,6 +9,7 @@ import io.Output;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 import static utils.Constants.FIRST_ARG;
 import static utils.Constants.SECOND_ARG;
@@ -32,18 +33,27 @@ public final class Main {
 
         Input input = objectMapper.readValue(new File(args[FIRST_ARG]), Input.class);
 
-        // compute the consumers and distributors
+        // read the initial data
         ArrayList<Consumer> consumers = Loader.loadInputConsumers(input);
+
+        consumers.sort(Comparator.comparing(Consumer::getId));
 
         ArrayList<Distributor> distributors = Loader.loadInputDistributors(input);
 
+        distributors.sort(Comparator.comparing(Distributor::getId));
+
         ArrayList<Producer> producers = Loader.loadInputProducers(input);
+
+        producers.sort(Comparator.comparing(Producer::getId));
 
         // start the simulation
         Simulator.startSimulation(input.getNumberOfTurns(),
                 consumers,
                 distributors,
+                producers,
                 input.getMonthlyUpdates());
+
+        producers.sort(Comparator.comparing(Producer::getId));
 
         // compute the Output class
         Output out = Loader.loadOutput(consumers, distributors, producers);

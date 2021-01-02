@@ -5,5 +5,6 @@ Starting audit...
 [ERROR] /home/tibi/Automatica/an2/sem1/POO/teme/proiect2/private_proiect_etapa2_POO/./src/ManualOutput.java:6:54: '+' should be on a new line. [OperatorWrap]
 [ERROR] /home/tibi/Automatica/an2/sem1/POO/teme/proiect2/private_proiect_etapa2_POO/./src/ManualOutput.java:7:38: '+' should be on a new line. [OperatorWrap]
 [ERROR] /home/tibi/Automatica/an2/sem1/POO/teme/proiect2/private_proiect_etapa2_POO/./src/ManualOutput.java:9:54: '+' should be on a new line. [OperatorWrap]
+[ERROR] /home/tibi/Automatica/an2/sem1/POO/teme/proiect2/private_proiect_etapa2_POO/./src/entities/Producer.java:4:8: Unused import - observer.CustomObserver. [UnusedImports]
 Audit done.
-Checkstyle ends with 6 errors.
+Checkstyle ends with 7 errors.

@@ -18,4 +18,6 @@ public final class Constants {
     public static final double DEBT_PERCENTAGE = 1.2;
 
     public static final double PROFIT_PERCENTAGE = 0.2;
+
+    public static final double PRODUCTION_COST_PERCENTAGE = 0.1;
 }
