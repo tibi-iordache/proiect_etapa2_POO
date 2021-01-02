@@ -1,0 +1,4 @@
+Starting audit...
+[ERROR] /home/tibi/Automatica/an2/sem1/POO/teme/proiect2/private_proiect_etapa2_POO/./src/strategies/EnergyChoiceStrategyType.java:10:25: Variable 'label' must be private and have accessor methods. [VisibilityModifier]
+Audit done.
+Checkstyle ends with 1 errors.

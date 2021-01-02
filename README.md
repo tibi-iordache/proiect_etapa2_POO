@@ -7,7 +7,7 @@ Proiectare Orientata pe Obiecte, Seriile CA, CD
 
 <https://ocw.cs.pub.ro/courses/poo-ca-cd/teme/proiect/etapa2>
 
-Student: todo nume, grupa
+Student: Iordache Tiberiu-Mihai, grupa 322CD
 
 ## Rulare teste
 
