@@ -9,7 +9,9 @@ public final class DistributorInput {
 
     private double initialInfrastructureCost;
 
-    private double initialProductionCost;
+    private double energyNeededKW;
+
+    private String producerStrategy;
 
     public DistributorInput() {
     }
@@ -18,12 +20,14 @@ public final class DistributorInput {
                             final int contractLength,
                             final double initialBudget,
                             final double initialInfrastructureCost,
-                            final double initialProductionCost) {
+                            final double energyNeededKW,
+                            final String producerStrategy) {
         this.id = id;
         this.contractLength = contractLength;
         this.initialBudget = initialBudget;
         this.initialInfrastructureCost = initialInfrastructureCost;
-        this.initialProductionCost = initialProductionCost;
+        this.energyNeededKW = energyNeededKW;
+        this.producerStrategy = producerStrategy;
     }
 
     public int getId() {
@@ -58,11 +62,19 @@ public final class DistributorInput {
         this.initialInfrastructureCost = initialInfrastructureCost;
     }
 
-    public double getInitialProductionCost() {
-        return initialProductionCost;
+    public double getEnergyNeededKW() {
+        return energyNeededKW;
     }
 
-    public void setInitialProductionCost(final double initialProductionCost) {
-        this.initialProductionCost = initialProductionCost;
+    public void setEnergyNeededKW(final double energyNeededKW) {
+        this.energyNeededKW = energyNeededKW;
+    }
+
+    public String getProducerStrategy() {
+        return producerStrategy;
+    }
+
+    public void setProducerStrategy(final String producerStrategy) {
+        this.producerStrategy = producerStrategy;
     }
 }

@@ -2,6 +2,8 @@ package io;
 
 import entities.Consumer;
 import entities.Distributor;
+import entities.EnergyType;
+import entities.Producer;
 import factory.FactorySingleton;
 import utils.Contract;
 
@@ -10,6 +12,7 @@ import java.util.List;
 
 import static utils.Constants.CONSUMER;
 import static utils.Constants.DISTRIBUTOR;
+import static utils.Constants.PRODUCER;
 
 public final class Loader {
     /*
@@ -45,7 +48,13 @@ public final class Loader {
                                                                    monthlyIncome,
                                                                    0,
                                                                    0,
-                                                                   0));
+                                                                   0,
+                                                                    0,
+                                                                    null,
+                                                                    null,
+                                                                    0,
+                                                                    0,
+                                                                    0));
         }
 
         return consumers;
@@ -72,7 +81,9 @@ public final class Loader {
 
             double initialInfrastructureCost = iterator.getInitialInfrastructureCost();
 
-            double initialProductionCost = iterator.getInitialProductionCost();
+            String producerStrategy = iterator.getProducerStrategy();
+
+            double energyNeededKW = iterator.getEnergyNeededKW();
 
             // use the factory to create new distributor instances
             distributors.add((Distributor) FactorySingleton.getInstance()
@@ -82,10 +93,59 @@ public final class Loader {
                                                                           0,
                                                                           contractLength,
                                                                           initialInfrastructureCost,
-                                                                          initialProductionCost));
+                                                                          0,
+                                                                            energyNeededKW,
+                                                                            producerStrategy,
+                                                                            null,
+                                                                            0,
+                                                                            0,
+                                                                            0));
         }
 
         return distributors;
+    }
+
+    /**
+     * Loads all the given input for producers into an ArrayList of Producers.
+     *
+     * @param input The Input class
+     * @return An ArrayList of Producers
+     */
+    public static ArrayList<Producer> loadInputProducers(final Input input) {
+        ArrayList<Producer> producers = new ArrayList<Producer>();
+
+        List<ProducerInput> producerInputList = input.getInitialData().getProducers();
+
+        // iterate through each producer from the input
+        for (ProducerInput iterator : producerInputList) {
+            int id = iterator.getId();
+
+            String energyType = iterator.getEnergyType();
+
+            double priceKW = iterator.getPriceKW();
+
+            double energyPerDistributor = iterator.getEnergyPerDistributor();
+
+            int maxDistributors = iterator.getMaxDistributors();
+
+            // use the factory to create new producer instances
+            producers.add((Producer) FactorySingleton.getInstance()
+                    .createEntity(PRODUCER,
+                            id,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            null,
+                            EnergyType.valueOf(energyType),
+                            priceKW,
+                            energyPerDistributor,
+                            maxDistributors));
+        }
+
+        return producers;
     }
 
     /**
@@ -93,10 +153,12 @@ public final class Loader {
      *
      * @param consumers An ArrayList of Consumers
      * @param distributors An ArrayList of Distributors
+     * @param producers An ArrayList of Producers
      * @return The Output class
      */
     public static Output loadOutput(final List<Consumer> consumers,
-                                    final List<Distributor> distributors) {
+                                    final List<Distributor> distributors,
+                                    final List<Producer> producers) {
         // compute each consumer data after the simulation
         ArrayList<ConsumerOutput> consumersOutput = new ArrayList<ConsumerOutput>();
 
@@ -123,12 +185,26 @@ public final class Loader {
             }
 
             DistributorOutput d = new DistributorOutput(iterator.getId(),
+                                                        (int) iterator.getEnergyNeededKW(),
+                                                        (int) iterator.getContractPrice(),
                                                         (int) iterator.getBudget(),
+                                                        iterator.getProducerStrategy(),
                                                         iterator.isBankrupt(),
                                                         contractsOutput);
             distributorsOutput.add(d);
         }
 
-        return new Output(consumersOutput, distributorsOutput);
+        ArrayList<ProducerOutput> producerOutputs = new ArrayList<ProducerOutput>();
+
+        for (Producer iterator : producers) {
+            producerOutputs.add(new ProducerOutput(iterator.getId(),
+                                                    iterator.getMaxDistributors(),
+                                                    iterator.getPriceKW(),
+                                                    iterator.getEnergyType().getLabel(),
+                                                    (int) iterator.getEnergyPerDistributor(),
+                                                    iterator.getMonthlyStats()));
+        }
+
+        return new Output(consumersOutput, distributorsOutput, producerOutputs);
     }
 }

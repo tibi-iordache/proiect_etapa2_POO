@@ -4,7 +4,7 @@ import entities.Consumer;
 import entities.Distributor;
 import factory.FactorySingleton;
 import io.ConsumerInput;
-import io.CostChangesInput;
+import io.DistributorChanges;
 import io.MonthlyUpdatesInput;
 import utils.Contract;
 
@@ -73,19 +73,25 @@ public final class Simulator {
                                                                newConsumer.getMonthlyIncome(),
                                                                0,
                                                                0,
-                                                               0));
+                                                               0,
+                                                                0,
+                                                                null,
+                                                                null,
+                                                                0,
+                                                                0,
+                                                                0));
             }
 
             // change the prices
-            for (CostChangesInput costChanges : monthUpdate.getCostsChanges()) {
+            for (DistributorChanges costChanges : monthUpdate.getDistributorChanges()) {
                 if (costChanges != null) {
                     // set the new infrastructure cost
                     distributors.get(costChanges.getId())
                                 .setInfrastructureCost(costChanges.getInfrastructureCost());
 
                     // set the new production cost
-                    distributors.get(costChanges.getId())
-                                .setProductionCost(costChanges.getProductionCost());
+//                    distributors.get(costChanges.getId())
+//                                .setProductionCost(costChanges.getProductionCost());
                 }
             }
         }

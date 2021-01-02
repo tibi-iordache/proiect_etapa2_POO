@@ -34,6 +34,10 @@ public final class Distributor extends Entity {
     * */
     private boolean isBankrupt;
 
+    private double energyNeededKW;
+
+    private String producerStrategy;
+
     public Distributor() {
     }
 
@@ -41,13 +45,22 @@ public final class Distributor extends Entity {
                        final int contractLength,
                        final double initialBudget,
                        final double infrastructureCost,
-                       final double productionCost) {
+                       final double productionCost,
+                       final double energyNeededKW,
+                       final String producerStrategy) {
         super(id, initialBudget);
 
         this.contractLength = contractLength;
+
         this.infrastructureCost = infrastructureCost;
+
         this.productionCost = productionCost;
+
         contractList = new ArrayList<Contract>();
+
+        this.energyNeededKW = energyNeededKW;
+
+        this.producerStrategy = producerStrategy;
     }
 
     public int getContractLength() {
@@ -96,5 +109,21 @@ public final class Distributor extends Entity {
 
     public void setBankrupt(final boolean bankrupt) {
         isBankrupt = bankrupt;
+    }
+
+    public double getEnergyNeededKW() {
+        return energyNeededKW;
+    }
+
+    public void setEnergyNeededKW(final double energyNeededKW) {
+        this.energyNeededKW = energyNeededKW;
+    }
+
+    public String getProducerStrategy() {
+        return producerStrategy;
+    }
+
+    public void setProducerStrategy(final String producerStrategy) {
+        this.producerStrategy = producerStrategy;
     }
 }

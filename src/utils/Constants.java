@@ -13,6 +13,8 @@ public final class Constants {
 
     public static final String DISTRIBUTOR = "distributor";
 
+    public static final String PRODUCER = "producer";
+
     public static final double DEBT_PERCENTAGE = 1.2;
 
     public static final double PROFIT_PERCENTAGE = 0.2;

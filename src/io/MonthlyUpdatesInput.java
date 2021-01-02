@@ -9,17 +9,24 @@ public final class MonthlyUpdatesInput {
     private List<ConsumerInput> newConsumers;
 
     /*
-    * Cost changes given for each round
+    * Distributors changes
     * */
-    private List<CostChangesInput> costsChanges;
+    private List<DistributorChanges> distributorChanges;
+
+    /*
+    * Producers changes
+    * */
+    private List<ProducerChanges> producerChanges;
 
     public MonthlyUpdatesInput() {
     }
 
     public MonthlyUpdatesInput(final List<ConsumerInput> newConsumers,
-                                      final List<CostChangesInput> costsChanges) {
+                               final List<DistributorChanges> distributorChanges,
+                               final List<ProducerChanges> producerChanges) {
         this.newConsumers = newConsumers;
-        this.costsChanges = costsChanges;
+        this.distributorChanges = distributorChanges;
+        this.producerChanges = producerChanges;
     }
 
     public List<ConsumerInput> getNewConsumers() {
@@ -30,11 +37,19 @@ public final class MonthlyUpdatesInput {
         this.newConsumers = newConsumers;
     }
 
-    public List<CostChangesInput> getCostsChanges() {
-        return costsChanges;
+    public List<DistributorChanges> getDistributorChanges() {
+        return distributorChanges;
     }
 
-    public void setCostsChanges(final List<CostChangesInput> costsChanges) {
-        this.costsChanges = costsChanges;
+    public void setDistributorChanges(final List<DistributorChanges> distributorChanges) {
+        this.distributorChanges = distributorChanges;
+    }
+
+    public List<ProducerChanges> getProducerChanges() {
+        return producerChanges;
+    }
+
+    public void setProducerChanges(final List<ProducerChanges> producerChanges) {
+        this.producerChanges = producerChanges;
     }
 }

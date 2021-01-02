@@ -13,14 +13,20 @@ public final class InitialDataInput {
     * */
     private List<DistributorInput> distributors;
 
-    public InitialDataInput() {
+    /*
+     * The producers given in the input
+     * */
+    private List<ProducerInput> producers;
 
+    public InitialDataInput() {
     }
 
     public InitialDataInput(final List<ConsumerInput> consumers,
-                            final List<DistributorInput> distributors) {
+                            final List<DistributorInput> distributors,
+                            final List<ProducerInput> producers) {
         this.consumers = consumers;
         this.distributors = distributors;
+        this.producers = producers;
     }
 
     public List<ConsumerInput> getConsumers() {
@@ -37,5 +43,13 @@ public final class InitialDataInput {
 
     public void setDistributors(final List<DistributorInput> distributors) {
         this.distributors = distributors;
+    }
+
+    public List<ProducerInput> getProducers() {
+        return producers;
+    }
+
+    public void setProducers(final List<ProducerInput> producers) {
+        this.producers = producers;
     }
 }

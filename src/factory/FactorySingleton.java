@@ -2,10 +2,13 @@ package factory;
 
 import entities.Consumer;
 import entities.Distributor;
+import entities.EnergyType;
 import entities.Entity;
+import entities.Producer;
 
 import static utils.Constants.CONSUMER;
 import static utils.Constants.DISTRIBUTOR;
+import static utils.Constants.PRODUCER;
 
 public final class FactorySingleton {
     /*
@@ -50,14 +53,24 @@ public final class FactorySingleton {
                                final double monthlyIncome,
                                final int contractLength,
                                final double initialInfrastructureCost,
-                               final double initialProductionCost) {
+                               final double initialProductionCost,
+                               final double energyNeededKW,
+                               final String producerStrategy,
+                               final EnergyType energyType,
+                               final double priceKW,
+                               final double energyPerDistributor,
+                               final int maxDistributors) {
         return switch (entityType) {
             default -> null;
 
             case CONSUMER -> new Consumer(id, initialBudget, monthlyIncome);
 
             case DISTRIBUTOR -> new Distributor(id, contractLength, initialBudget,
-                                                initialInfrastructureCost, initialProductionCost);
+                                                initialInfrastructureCost, initialProductionCost,
+                                                energyNeededKW, producerStrategy);
+
+            case PRODUCER -> new Producer(id, energyType, priceKW, energyPerDistributor,
+                                            maxDistributors);
         };
     }
 }

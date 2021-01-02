@@ -5,7 +5,13 @@ import java.util.List;
 public final class DistributorOutput {
     private int id;
 
+    private int energyNeededKW;
+
+    private int contractCost;
+
     private int budget;
+
+    private String producerStrategy;
 
     private boolean isBankrupt;
 
@@ -15,11 +21,17 @@ public final class DistributorOutput {
     }
 
     public DistributorOutput(final int id,
+                             final int energyNeededKW,
+                             final int contractCost,
                              final int budget,
+                             final String producerStrategy,
                              final boolean isBankrupt,
                              final List<ContractOutput> contracts) {
         this.id = id;
+        this.energyNeededKW = energyNeededKW;
+        this.contractCost = contractCost;
         this.budget = budget;
+        this.producerStrategy = producerStrategy;
         this.isBankrupt = isBankrupt;
         this.contracts = contracts;
     }
@@ -32,12 +44,36 @@ public final class DistributorOutput {
         this.id = id;
     }
 
+    public int getEnergyNeededKW() {
+        return energyNeededKW;
+    }
+
+    public void setEnergyNeededKW(final int energyNeededKW) {
+        this.energyNeededKW = energyNeededKW;
+    }
+
+    public int getContractCost() {
+        return contractCost;
+    }
+
+    public void setContractCost(int contractCost) {
+        this.contractCost = contractCost;
+    }
+
     public int getBudget() {
         return budget;
     }
 
     public void setBudget(final int budget) {
         this.budget = budget;
+    }
+
+    public String getProducerStrategy() {
+        return producerStrategy;
+    }
+
+    public void setProducerStrategy(final String producerStrategy) {
+        this.producerStrategy = producerStrategy;
     }
 
     public boolean getIsBankrupt() {
