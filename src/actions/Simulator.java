@@ -9,6 +9,7 @@ import io.DistributorChanges;
 import io.MonthlyStatsOutput;
 import io.MonthlyUpdatesInput;
 import io.ProducerChanges;
+import observer.Subject;
 import utils.Contract;
 
 import java.util.Collections;
@@ -43,6 +44,9 @@ public final class Simulator {
                                        final List<MonthlyUpdatesInput> monthlyUpdatesInputs) {
         // initial round
 
+        // create the observable subject with all the distributors
+        Subject observableSubject = new Subject(distributors);
+
         // each distributor chooses or updates the producers
         chooseProducers(distributors, producers);
 
@@ -72,7 +76,8 @@ public final class Simulator {
             payTotalCost(consumers, distributors);
 
             // check for monthly updates of producers
-            updateProducersEnergyPerDistributor(i, producers, distributors, monthlyUpdatesInputs);
+            updateProducersEnergyPerDistributor(i, producers, distributors, monthlyUpdatesInputs,
+                    observableSubject);
 
             // remove any bankrupt distributor from each producer observator list
             removeBankruptDistributors(producers);
@@ -84,33 +89,50 @@ public final class Simulator {
 
     /**
      * TODO
+     * @param currentRoundNo
      * @param producers
      * @param distributors
      * @param monthlyUpdatesInputs
+     * @param observableSubject
      */
     public static void updateProducersEnergyPerDistributor(final int currentRoundNo,
                                                            final List<Producer> producers,
                                                            final List<Distributor> distributors,
-                                                           final List<MonthlyUpdatesInput> monthlyUpdatesInputs) {
+                                                           final List<MonthlyUpdatesInput> monthlyUpdatesInputs,
+                                                           final Subject observableSubject) {
         // change the producer prices
         for (ProducerChanges producerChanges : monthlyUpdatesInputs.get(currentRoundNo - 1)
                 .getProducerChanges()) {
             if (producerChanges != null) {
                 Collections.sort(producers, Comparator.comparing(Producer::getId));
 
-                Iterator<Producer> prodIter = producers.iterator();
+                // iterate until we find the producer to be modified
 
-                while (prodIter.hasNext()) {
-                    Producer current = prodIter.next();
+                Iterator<Producer> producerIterator = producers.iterator();
+
+                while(producerIterator.hasNext()) {
+                    Producer current = producerIterator.next();
 
                     if (current.getId() == producerChanges.getId()) {
-                        current.setEnergyPerDistributor(producerChanges.getEnergyPerDistributor(),
+                        // call the observer to make the updates to the producer, but also to all
+                        // the distributors
+                        observableSubject.notifyAllObservers(current,
+                                producerChanges.getEnergyPerDistributor(),
                                 producers);
                     }
                 }
 
-                Collections.sort(producers, Comparator.comparing(Producer::getId));
+//                for (Producer producerIterator : producers) {
+//                    if (producerChanges.getId() == producerIterator.getId()) {
+//                        // call the observer to make the updates to the producer, but also to all
+//                        // the distributors
+//                        observableSubject.notifyAllObservers(producerIterator,
+//                                                            producerChanges.getEnergyPerDistributor(),
+//                                                            producers);
+//                    }
+//                }
 
+                // compute each distributor new production cost
                 computeProductionCost(distributors);
             }
         }
@@ -123,15 +145,15 @@ public final class Simulator {
     public static void removeBankruptDistributors(final List<Producer> producers) {
         // remove the bankrupt distr
         for (Producer it : producers) {
-            if (it != null) {
-                Iterator<Distributor> iter = it.getObservers().iterator();
+            if (!it.getClients().isEmpty()) {
+                // iterate through each producer clients and remove the bankrupt ones
+                Iterator<Distributor> clientIter = it.getClients().iterator();
 
-                while (iter.hasNext()) {
-                    Distributor current = iter.next();
+                while (clientIter.hasNext()) {
+                    Distributor currentClient = clientIter.next();
 
-                    if (it.getObservers().get(current.getId()).isBankrupt()) {
-//                        current.getProducers().clear();
-                        iter.remove();
+                    if (currentClient.isBankrupt()) {
+                        clientIter.remove();
                     }
                 }
             }
@@ -150,8 +172,8 @@ public final class Simulator {
         for (Producer it : producers) {
             it.getMonthlyStats().add(new MonthlyStatsOutput(currentRoundNo));
 
-            if (it.getObservers() != null) {
-                for (Distributor disIt : it.getObservers()) {
+            if (it.getClients() != null) {
+                for (Distributor disIt : it.getClients()) {
                     if (disIt != null) {
                         it.getMonthlyStats().get(currentRoundNo - 1)
                                 .getDistributorsIds().add(disIt.getId());
@@ -200,10 +222,6 @@ public final class Simulator {
                     // set the new infrastructure cost
                     distributors.get(costChanges.getId())
                                 .setInfrastructureCost(costChanges.getInfrastructureCost());
-
-                    // set the new production cost
-//                    distributors.get(costChanges.getId())
-//                                .setProductionCost(costChanges.getProductionCost());
                 }
             }
         }

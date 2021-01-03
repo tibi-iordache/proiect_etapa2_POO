@@ -1,10 +1,8 @@
 package entities;
 
 import io.MonthlyStatsOutput;
-import observer.CustomObserver;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public final class Producer extends Entity {
@@ -21,7 +19,10 @@ public final class Producer extends Entity {
     * */
     private List<MonthlyStatsOutput> monthlyStats;
 
-    private List<Distributor> observers;
+    /*
+    * List with all the distributors supplied by the current producer
+    * */
+    private List<Distributor> clients;
 
     public Producer() {
     }
@@ -43,42 +44,7 @@ public final class Producer extends Entity {
 
         this.monthlyStats = new ArrayList<MonthlyStatsOutput>();
 
-        this.observers = new ArrayList<Distributor>();
-    }
-
-    /**
-     * TODO
-     * @param observer
-     */
-    public void addObserver(final Distributor observer) {
-        this.observers.add(observer);
-    }
-
-    /**
-     * TODO
-     * @param observer
-     */
-    public void removeObserver(final Distributor observer) {
-        this.observers.remove(observer);
-    }
-
-    /**
-     * TODO
-     *
-     * @param producerList
-     */
-    public void notifyAllObservers(final List<Producer> producerList) {
-//        Iterator<Distributor> iter = this.observers.iterator();
-//
-//        while(iter.hasNext()) {
-//            Distributor currentObserver = iter.next();
-//
-//            currentObserver.update(producerList);
-//        }
-
-        for (Distributor observer : observers) {
-            observer.update(producerList);
-        }
+        this.clients = new ArrayList<Distributor>();
     }
 
     public EnergyType getEnergyType() {
@@ -101,16 +67,8 @@ public final class Producer extends Entity {
         return energyPerDistributor;
     }
 
-    /**
-     * TODO
-     * @param energyAmount
-     * @param producerList
-     */
-    public void setEnergyPerDistributor(final double energyAmount,
-                                        final List<Producer> producerList) {
-        this.energyPerDistributor = energyAmount;
-
-        notifyAllObservers(producerList);
+    public void setEnergyPerDistributor(final double energyPerDistributor) {
+        this.energyPerDistributor = energyPerDistributor;
     }
 
     public int getMaxDistributors() {
@@ -129,11 +87,11 @@ public final class Producer extends Entity {
         this.monthlyStats = monthlyStats;
     }
 
-    public List<Distributor> getObservers() {
-        return observers;
+    public List<Distributor> getClients() {
+        return clients;
     }
 
-    public void setObservers(List<Distributor> observers) {
-        this.observers = observers;
+    public void setClients(final List<Distributor> clients) {
+        this.clients = clients;
     }
 }
