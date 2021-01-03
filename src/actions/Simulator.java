@@ -11,6 +11,7 @@ import io.MonthlyUpdatesInput;
 import io.ProducerChanges;
 import utils.Contract;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -40,15 +41,21 @@ public final class Simulator {
                                        final List<Distributor> distributors,
                                        final List<Producer> producers,
                                        final List<MonthlyUpdatesInput> monthlyUpdatesInputs) {
+        // initial round
+
         // each distributor chooses or updates the producers
         chooseProducers(distributors, producers);
 
+        // compute the production cost
         computeProductionCost(distributors);
 
+        // compute the contract price
         computeContractCostList(0, distributors);
 
+        // each consumers pay
         chooseContracts(consumers, distributors, getBestDistributor(distributors));
 
+        // each distributor pay
         payTotalCost(consumers, distributors);
 
         for (int i = 1; i <= numberOfTurns; i++) {
@@ -64,48 +71,92 @@ public final class Simulator {
             // each distributor should now pay it's monthly expenses
             payTotalCost(consumers, distributors);
 
+            // check for monthly updates of producers
+            updateProducersEnergyPerDistributor(i, producers, distributors, monthlyUpdatesInputs);
 
-            // change the producer prices
-            for (ProducerChanges producerChanges : monthlyUpdatesInputs.get(i - 1)
-                                                                        .getProducerChanges()) {
-                if (producerChanges != null) {
-                    producers.get(producerChanges.getId())
-                            .setEnergyPerDistributor(producerChanges.getEnergyPerDistributor(),
-                                    producers);
-                }
-            }
+            // remove any bankrupt distributor from each producer observator list
+            removeBankruptDistributors(producers);
 
-            computeProductionCost(distributors);
+            // save how much distributors each producer has at the end of the month
+            saveDistributors(i, producers);
+        }
+    }
 
-            // remove the bankrupt distr
+    /**
+     * TODO
+     * @param producers
+     * @param distributors
+     * @param monthlyUpdatesInputs
+     */
+    public static void updateProducersEnergyPerDistributor(final int currentRoundNo,
+                                                           final List<Producer> producers,
+                                                           final List<Distributor> distributors,
+                                                           final List<MonthlyUpdatesInput> monthlyUpdatesInputs) {
+        // change the producer prices
+        for (ProducerChanges producerChanges : monthlyUpdatesInputs.get(currentRoundNo - 1)
+                .getProducerChanges()) {
+            if (producerChanges != null) {
+                Collections.sort(producers, Comparator.comparing(Producer::getId));
 
-            for (Producer it : producers) {
-                if (it != null) {
-                    Iterator<Distributor> iter = it.getObservers().iterator();
+                Iterator<Producer> prodIter = producers.iterator();
 
-                    while (iter.hasNext()) {
-                        Distributor current = iter.next();
+                while (prodIter.hasNext()) {
+                    Producer current = prodIter.next();
 
-                        if (it.getObservers().get(current.getId()).isBankrupt()) {
-                            iter.remove();
-                        }
-                    }
-                }
-            }
-
-            // save the amount of distributors each producer has
-            for (Producer it : producers) {
-                it.getMonthlyStats().add(new MonthlyStatsOutput(i));
-
-                if (it.getObservers() != null) {
-                    for (Distributor disIt : it.getObservers()) {
-                        if (disIt != null) {
-                            it.getMonthlyStats().get(i - 1)
-                                    .getDistributorsIds().add(disIt.getId());
-                        }
+                    if (current.getId() == producerChanges.getId()) {
+                        current.setEnergyPerDistributor(producerChanges.getEnergyPerDistributor(),
+                                producers);
                     }
                 }
 
+                Collections.sort(producers, Comparator.comparing(Producer::getId));
+
+                computeProductionCost(distributors);
+            }
+        }
+    }
+
+    /**
+     * TODO
+     * @param producers
+     */
+    public static void removeBankruptDistributors(final List<Producer> producers) {
+        // remove the bankrupt distr
+        for (Producer it : producers) {
+            if (it != null) {
+                Iterator<Distributor> iter = it.getObservers().iterator();
+
+                while (iter.hasNext()) {
+                    Distributor current = iter.next();
+
+                    if (it.getObservers().get(current.getId()).isBankrupt()) {
+//                        current.getProducers().clear();
+                        iter.remove();
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * TODO
+     *
+     * @param currentRoundNo
+     * @param producers
+     */
+    public static void saveDistributors(final int currentRoundNo,
+                                        final List<Producer> producers) {
+        // save the amount of distributors each producer has
+        for (Producer it : producers) {
+            it.getMonthlyStats().add(new MonthlyStatsOutput(currentRoundNo));
+
+            if (it.getObservers() != null) {
+                for (Distributor disIt : it.getObservers()) {
+                    if (disIt != null) {
+                        it.getMonthlyStats().get(currentRoundNo - 1)
+                                .getDistributorsIds().add(disIt.getId());
+                    }
+                }
             }
         }
     }
@@ -298,12 +349,15 @@ public final class Simulator {
 
                             int oldDistributorId = consumer.getContract().getDistributorId();
 
+                            //-------------------------------------------------------------------
+                            // TODO
+
                             // check if he can afford paying the old contract and sign a new one
                             if (consumer.getBudget() >= (cheapest.getContractPrice()
-                                                                        + debtPrice)) {
+                                    + debtPrice)) {
                                 // first remove the old contract
                                 distributors.get(consumer.getContract().getDistributorId())
-                                            .getContractList().remove(consumer.getContract());
+                                        .getContractList().remove(consumer.getContract());
 
                                 signNewContract(consumer, cheapest, false);
 
@@ -311,12 +365,25 @@ public final class Simulator {
                                 consumer.setBudget(consumer.getBudget() - debtPrice);
 
                                 distributors.get(oldDistributorId).setBudget(distributors
-                                            .get(oldDistributorId).getBudget() + debtPrice);
+                                        .get(oldDistributorId).getBudget() + debtPrice);
 
                                 consumer.setInDebt(false);
                             } else {
-                                consumer.setBankrupt(true);
+                                if (cheapest.getId() == consumer.getContract().getDistributorId()) {
+                                    // he will sign a new contract with the old distributor
+                                    consumer.setBankrupt(true);
+                                } else {
+                                    // other distributor, he can pay the debt and put the new one in
+                                    // debt also
+
+                                    // first remove the old contract
+                                    distributors.get(consumer.getContract().getDistributorId())
+                                            .getContractList().remove(consumer.getContract());
+
+                                    signNewContract(consumer, cheapest, true);
+                                }
                             }
+                            //-------------------------------------------------------------------
                         } else {
                             // he is not in debt, we can now check if he can sign a new one
 

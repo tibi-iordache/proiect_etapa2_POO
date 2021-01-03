@@ -27,6 +27,12 @@ public final class GreenStrategy implements EnergyChoiceStrategy {
 
         double sum = 0;
 
+        for (Producer p : distributor.getProducers()) {
+            p.removeObserver(distributor);
+        }
+
+        distributor.getProducers().clear();
+
         for (Producer iterator : producers) {
             if (sum <= distributor.getEnergyNeededKW()) {
                 // add the current producer to the distributor list

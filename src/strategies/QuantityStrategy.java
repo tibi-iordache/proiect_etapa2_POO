@@ -18,6 +18,12 @@ public final class QuantityStrategy implements EnergyChoiceStrategy {
 
         double sum = 0;
 
+        for (Producer p : distributor.getProducers()) {
+            p.removeObserver(distributor);
+        }
+
+        distributor.getProducers().clear();
+
         for (Producer iterator : producers) {
             if (sum <= distributor.getEnergyNeededKW()) {
                 // add the current producer to the distributor list
@@ -28,5 +34,7 @@ public final class QuantityStrategy implements EnergyChoiceStrategy {
                 sum += iterator.getEnergyPerDistributor();
             }
         }
+
+        Collections.sort(producers, Comparator.comparing(Producer::getId));
     }
 }

@@ -4,6 +4,7 @@ import io.MonthlyStatsOutput;
 import observer.CustomObserver;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public final class Producer extends Entity {
@@ -55,10 +56,26 @@ public final class Producer extends Entity {
 
     /**
      * TODO
+     * @param observer
+     */
+    public void removeObserver(final Distributor observer) {
+        this.observers.remove(observer);
+    }
+
+    /**
+     * TODO
      *
      * @param producerList
      */
     public void notifyAllObservers(final List<Producer> producerList) {
+//        Iterator<Distributor> iter = this.observers.iterator();
+//
+//        while(iter.hasNext()) {
+//            Distributor currentObserver = iter.next();
+//
+//            currentObserver.update(producerList);
+//        }
+
         for (Distributor observer : observers) {
             observer.update(producerList);
         }
