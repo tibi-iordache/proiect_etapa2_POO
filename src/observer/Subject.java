@@ -3,6 +3,7 @@ package observer;
 import entities.Distributor;
 import entities.Producer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class Subject implements CustomObservable {
@@ -34,8 +35,12 @@ public final class Subject implements CustomObservable {
                                    final List<Producer> producersList) {
         producerModified.setEnergyPerDistributor(newEnergyPerDistributor);
 
+        List<Distributor> observersToBeNotified = new ArrayList<>(producerModified.getClients());
+
         for (Distributor observer : observers) {
-            observer.update(producersList);
+            if (observersToBeNotified.contains(observer)) {
+                observer.update(producersList);
+            }
         }
     }
 

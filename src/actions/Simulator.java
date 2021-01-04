@@ -173,6 +173,8 @@ public final class Simulator {
             it.getMonthlyStats().add(new MonthlyStatsOutput(currentRoundNo));
 
             if (it.getClients() != null) {
+                it.getClients().sort(Comparator.comparing(Distributor::getId));
+
                 for (Distributor disIt : it.getClients()) {
                     if (disIt != null) {
                         it.getMonthlyStats().get(currentRoundNo - 1)
@@ -370,37 +372,68 @@ public final class Simulator {
                             //-------------------------------------------------------------------
                             // TODO
 
-                            // check if he can afford paying the old contract and sign a new one
-                            if (consumer.getBudget() >= (cheapest.getContractPrice()
-                                    + debtPrice)) {
-                                // first remove the old contract
-                                distributors.get(consumer.getContract().getDistributorId())
-                                        .getContractList().remove(consumer.getContract());
-
-                                signNewContract(consumer, cheapest, false);
-
-                                // pay previous debt
-                                consumer.setBudget(consumer.getBudget() - debtPrice);
-
-                                distributors.get(oldDistributorId).setBudget(distributors
-                                        .get(oldDistributorId).getBudget() + debtPrice);
-
-                                consumer.setInDebt(false);
-                            } else {
-                                if (cheapest.getId() == consumer.getContract().getDistributorId()) {
-                                    // he will sign a new contract with the old distributor
-                                    consumer.setBankrupt(true);
-                                } else {
-                                    // other distributor, he can pay the debt and put the new one in
-                                    // debt also
-
+                            if (cheapest.getId() == oldDistributorId) {
+                                // check if he can afford paying the old contract and sign a new one
+                                // with the same distributor
+                                if (consumer.getBudget() >= (cheapest.getContractPrice()
+                                        + debtPrice)) {
                                     // first remove the old contract
                                     distributors.get(consumer.getContract().getDistributorId())
                                             .getContractList().remove(consumer.getContract());
 
-                                    signNewContract(consumer, cheapest, true);
+                                    signNewContract(consumer, cheapest, false);
+
+                                    // pay previous debt
+                                    consumer.setBudget(consumer.getBudget() - debtPrice);
+
+                                    distributors.get(oldDistributorId).setBudget(distributors
+                                            .get(oldDistributorId).getBudget() + debtPrice);
+
+                                    consumer.setInDebt(false);
+                                } else {
+                                    consumer.setBankrupt(true);
+                                }
+                            } else {
+                                // another distributor, he can pay only the debt
+                                if (consumer.getBudget() >= (cheapest.getContractPrice()
+                                        + debtPrice)) {
+                                    // pay the debt and the new contract
+                                    // first remove the old contract
+                                    distributors.get(consumer.getContract().getDistributorId())
+                                            .getContractList().remove(consumer.getContract());
+
+                                    signNewContract(consumer, cheapest, false);
+
+                                    // pay previous debt
+                                    consumer.setBudget(consumer.getBudget() - debtPrice);
+
+                                    distributors.get(oldDistributorId).setBudget(distributors
+                                            .get(oldDistributorId).getBudget() + debtPrice);
+
+                                    consumer.setInDebt(false);
+                                } else {
+                                    // check if he can pay only the debt
+                                    if (consumer.getBudget() >= debtPrice) {
+                                        // other distributor, he can pay the debt and put the new one in
+                                        // debt also
+
+                                        // first remove the old contract
+                                        distributors.get(consumer.getContract().getDistributorId())
+                                                .getContractList().remove(consumer.getContract());
+
+                                        signNewContract(consumer, cheapest, true);
+
+                                        // pay previous debt
+                                        consumer.setBudget(consumer.getBudget() - debtPrice);
+
+                                        distributors.get(oldDistributorId).setBudget(distributors
+                                                .get(oldDistributorId).getBudget() + debtPrice);
+                                    } else {
+                                        consumer.setBankrupt(true);
+                                    }
                                 }
                             }
+
                             //-------------------------------------------------------------------
                         } else {
                             // he is not in debt, we can now check if he can sign a new one

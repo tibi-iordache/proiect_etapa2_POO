@@ -32,7 +32,7 @@ public final class PriceStrategy implements EnergyChoiceStrategy {
 
         for (Producer iterator : copyProducers) {
             if ((sum <= distributor.getEnergyNeededKW())
-                    && (iterator.getMaxDistributors() != iterator.getClients().size())) {
+                    && (iterator.getMaxDistributors() > iterator.getClients().size())) {
                 // find the corespondend producer from the original list
                 for (Producer original : producers) {
                     if (original.getId() == iterator.getId()) {
@@ -46,7 +46,5 @@ public final class PriceStrategy implements EnergyChoiceStrategy {
                 }
             }
         }
-
-//        Collections.sort(producers, Comparator.comparing(Producer::getId));
     }
 }
