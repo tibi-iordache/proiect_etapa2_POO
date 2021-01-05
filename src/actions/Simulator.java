@@ -12,7 +12,7 @@ import io.ProducerChanges;
 import observer.Subject;
 import utils.Contract;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -98,43 +98,39 @@ public final class Simulator {
     public static void updateProducersEnergyPerDistributor(final int currentRoundNo,
                                                            final List<Producer> producers,
                                                            final List<Distributor> distributors,
-                                                           final List<MonthlyUpdatesInput> monthlyUpdatesInputs,
+                                           final List<MonthlyUpdatesInput> monthlyUpdatesInputs,
                                                            final Subject observableSubject) {
         // change the producer prices
-        for (ProducerChanges producerChanges : monthlyUpdatesInputs.get(currentRoundNo - 1)
-                .getProducerChanges()) {
-            if (producerChanges != null) {
-                Collections.sort(producers, Comparator.comparing(Producer::getId));
+        List<Distributor> observersToBeNotified = new ArrayList<Distributor>();
 
-                // iterate until we find the producer to be modified
+        List<ProducerChanges> producerChangesList = monthlyUpdatesInputs
+                                    .get(currentRoundNo - 1).getProducerChanges();
 
-                Iterator<Producer> producerIterator = producers.iterator();
+        if (producerChangesList != null) {
+            // iterate through producer changes
+            for (ProducerChanges producerChanges : producerChangesList) {
+                // iterate through each producer until we find the one that need to be updated
+                for (Producer producerIterator : producers) {
+                    if (producerChanges.getId() == producerIterator.getId()) {
+                        // update the cost
+                        producerIterator
+                                .setEnergyPerDistributor(producerChanges.getEnergyPerDistributor());
 
-                while(producerIterator.hasNext()) {
-                    Producer current = producerIterator.next();
-
-                    if (current.getId() == producerChanges.getId()) {
-                        // call the observer to make the updates to the producer, but also to all
-                        // the distributors
-                        observableSubject.notifyAllObservers(current,
-                                producerChanges.getEnergyPerDistributor(),
-                                producers);
+                        // save the distributor that need to be saved
+                        for (Distributor toBeAdded : producerIterator.getClients()) {
+                            if (!observersToBeNotified.contains(toBeAdded)) {
+                                observersToBeNotified.add(toBeAdded);
+                            }
+                        }
                     }
                 }
-
-//                for (Producer producerIterator : producers) {
-//                    if (producerChanges.getId() == producerIterator.getId()) {
-//                        // call the observer to make the updates to the producer, but also to all
-//                        // the distributors
-//                        observableSubject.notifyAllObservers(producerIterator,
-//                                                            producerChanges.getEnergyPerDistributor(),
-//                                                            producers);
-//                    }
-//                }
-
-                // compute each distributor new production cost
-                computeProductionCost(distributors);
             }
+
+            observersToBeNotified.sort(Comparator.comparing(Distributor::getId));
+
+            observableSubject.notifyAllObservers(observersToBeNotified, producers);
+
+            computeProductionCost(distributors);
         }
     }
 
@@ -414,7 +410,7 @@ public final class Simulator {
                                 } else {
                                     // check if he can pay only the debt
                                     if (consumer.getBudget() >= debtPrice) {
-                                        // other distributor, he can pay the debt and put the new one in
+                                // other distributor, he can pay the debt and put the new one in
                                         // debt also
 
                                         // first remove the old contract

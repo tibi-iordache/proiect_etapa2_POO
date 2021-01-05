@@ -10,21 +10,19 @@ public interface CustomObservable {
      * TODO
      * @param newObserver
      */
-    void addObserver(final Distributor newObserver);
+    void addObserver(Distributor newObserver);
 
     /**
      * TODO
      * @param observerToBeRemoved
      */
-    void removeObserver(final Distributor observerToBeRemoved);
+    void removeObserver(Distributor observerToBeRemoved);
 
     /**
      * TODO
-     * @param producerModified
-     * @param newEnergyPerDistributor
+     * @param observers
      * @param producerList
      */
-    void notifyAllObservers(final Producer producerModified,
-                            final double newEnergyPerDistributor,
-                            final List<Producer> producerList);
+    void notifyAllObservers(List<Distributor> observers,
+                            List<Producer> producerList);
 }

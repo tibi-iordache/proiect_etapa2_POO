@@ -31,7 +31,7 @@ public final class PriceStrategy implements EnergyChoiceStrategy {
         double sum = 0;
 
         for (Producer iterator : copyProducers) {
-            if ((sum <= distributor.getEnergyNeededKW())
+            if ((sum < distributor.getEnergyNeededKW())
                     && (iterator.getMaxDistributors() > iterator.getClients().size())) {
                 // find the corespondend producer from the original list
                 for (Producer original : producers) {
