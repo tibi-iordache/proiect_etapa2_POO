@@ -12,7 +12,6 @@ import io.ProducerChanges;
 import observer.Subject;
 import utils.Contract;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -24,9 +23,16 @@ import static utils.Constants.DEBT_PERCENTAGE;
 
 
 public final class Simulator {
-    // for coding style
+    /*
+    * for coding style
+    * */
     private Simulator() {
     }
+
+    /**
+     * Returns the only instance of the Simulator
+     * @return
+     */
 
     /**
      * Starts the simulation, execute each step.
@@ -45,7 +51,7 @@ public final class Simulator {
         // initial round
 
         // create the observable subject with all the distributors
-        Subject observableSubject = new Subject(distributors);
+        Subject observableSubject = new Subject(producers);
 
         // each distributor chooses or updates the producers
         chooseProducers(distributors, producers);
@@ -101,34 +107,11 @@ public final class Simulator {
                                            final List<MonthlyUpdatesInput> monthlyUpdatesInputs,
                                                            final Subject observableSubject) {
         // change the producer prices
-        List<Distributor> observersToBeNotified = new ArrayList<Distributor>();
-
         List<ProducerChanges> producerChangesList = monthlyUpdatesInputs
                                     .get(currentRoundNo - 1).getProducerChanges();
 
         if (producerChangesList != null) {
-            // iterate through producer changes
-            for (ProducerChanges producerChanges : producerChangesList) {
-                // iterate through each producer until we find the one that need to be updated
-                for (Producer producerIterator : producers) {
-                    if (producerChanges.getId() == producerIterator.getId()) {
-                        // update the cost
-                        producerIterator
-                                .setEnergyPerDistributor(producerChanges.getEnergyPerDistributor());
-
-                        // save the distributor that need to be saved
-                        for (Distributor toBeAdded : producerIterator.getClients()) {
-                            if (!observersToBeNotified.contains(toBeAdded)) {
-                                observersToBeNotified.add(toBeAdded);
-                            }
-                        }
-                    }
-                }
-            }
-
-            observersToBeNotified.sort(Comparator.comparing(Distributor::getId));
-
-            observableSubject.notifyAllObservers(observersToBeNotified, producers);
+            observableSubject.updateProducersEnergy(producerChangesList);
 
             computeProductionCost(distributors);
         }

@@ -1,28 +1,20 @@
 package observer;
 
 import entities.Distributor;
-import entities.Producer;
+import io.ProducerChanges;
 
 import java.util.List;
 
 public interface CustomObservable {
     /**
      * TODO
-     * @param newObserver
+     * @param distributorsToBeNotified
      */
-    void addObserver(Distributor newObserver);
+    void notifyDistributors(List<Distributor> distributorsToBeNotified);
 
     /**
      * TODO
-     * @param observerToBeRemoved
+     * @param producerChangesList
      */
-    void removeObserver(Distributor observerToBeRemoved);
-
-    /**
-     * TODO
-     * @param observers
-     * @param producerList
-     */
-    void notifyAllObservers(List<Distributor> observers,
-                            List<Producer> producerList);
+    void updateProducersEnergy(List<ProducerChanges> producerChangesList);
 }

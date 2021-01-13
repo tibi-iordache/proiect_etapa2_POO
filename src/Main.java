@@ -48,10 +48,10 @@ public final class Main {
 
         // start the simulation
         Simulator.startSimulation(input.getNumberOfTurns(),
-                consumers,
-                distributors,
-                producers,
-                input.getMonthlyUpdates());
+                                                consumers,
+                                                distributors,
+                                                producers,
+                                                input.getMonthlyUpdates());
 
         producers.sort(Comparator.comparing(Producer::getId));
 

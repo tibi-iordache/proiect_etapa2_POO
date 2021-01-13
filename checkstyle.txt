@@ -1,9 +1,8 @@
 Starting audit...
-[ERROR] /home/tibi/Automatica/an2/sem1/POO/teme/proiect2/private_proiect_etapa2_POO/./src/strategies/EnergyChoiceStrategyType.java:10:25: Variable 'label' must be private and have accessor methods. [VisibilityModifier]
 [ERROR] /home/tibi/Automatica/an2/sem1/POO/teme/proiect2/private_proiect_etapa2_POO/./src/ManualOutput.java:2:1: Utility classes should not have a public or default constructor. [HideUtilityClassConstructor]
 [ERROR] /home/tibi/Automatica/an2/sem1/POO/teme/proiect2/private_proiect_etapa2_POO/./src/ManualOutput.java:3:5: Missing a Javadoc comment. [MissingJavadocMethod]
 [ERROR] /home/tibi/Automatica/an2/sem1/POO/teme/proiect2/private_proiect_etapa2_POO/./src/ManualOutput.java:6:54: '+' should be on a new line. [OperatorWrap]
 [ERROR] /home/tibi/Automatica/an2/sem1/POO/teme/proiect2/private_proiect_etapa2_POO/./src/ManualOutput.java:7:38: '+' should be on a new line. [OperatorWrap]
 [ERROR] /home/tibi/Automatica/an2/sem1/POO/teme/proiect2/private_proiect_etapa2_POO/./src/ManualOutput.java:9:54: '+' should be on a new line. [OperatorWrap]
 Audit done.
-Checkstyle ends with 6 errors.
+Checkstyle ends with 5 errors.
