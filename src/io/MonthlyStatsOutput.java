@@ -13,6 +13,7 @@ public final class MonthlyStatsOutput {
 
     public MonthlyStatsOutput(int month) {
         this.month = month;
+
         this.distributorsIds = new ArrayList<Integer>();
     }
 

@@ -9,7 +9,6 @@ import io.Output;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Comparator;
 
 import static utils.Constants.FIRST_ARG;
 import static utils.Constants.SECOND_ARG;
@@ -33,7 +32,7 @@ public final class Main {
 
         Input input = objectMapper.readValue(new File(args[FIRST_ARG]), Input.class);
 
-        // read the initial data
+        // compute the initial data
         ArrayList<Consumer> consumers = Loader.loadInputConsumers(input);
 
         ArrayList<Distributor> distributors = Loader.loadInputDistributors(input);
@@ -46,8 +45,6 @@ public final class Main {
                                                 distributors,
                                                 producers,
                                                 input.getMonthlyUpdates());
-
-        producers.sort(Comparator.comparing(Producer::getId));
 
         // compute the Output class
         Output out = Loader.loadOutput(consumers, distributors, producers);
