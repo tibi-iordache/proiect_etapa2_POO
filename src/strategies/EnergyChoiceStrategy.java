@@ -21,7 +21,7 @@ public abstract class EnergyChoiceStrategy {
      * @param distributor The distributor that searches producers
      * @param sortedProducers The producers sorted based on the distributor strategy
      */
-    public void searchNewProducers(Distributor distributor,
+    protected void searchNewProducers(Distributor distributor,
                                    List<Producer> sortedProducers) {
         double sum = 0;
 

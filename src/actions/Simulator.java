@@ -89,11 +89,12 @@ public final class Simulator {
     }
 
     /**
-     * Updates producers energy if given from the input
-     * @param currentRoundNo
-     * @param distributors
-     * @param monthlyUpdatesInputs
-     * @param observableSubject
+     * Updates producers energy if given from the input.
+     *
+     * @param currentRoundNo The month number
+     * @param distributors The list of distributors
+     * @param monthlyUpdatesInputs The monthly updates
+     * @param observableSubject The Observable object
      */
     public static void updateProducersEnergyPerDistributor(final int currentRoundNo,
                                                            final List<Distributor> distributors,
@@ -138,7 +139,7 @@ public final class Simulator {
     /**
      * Removes the bankrupt distributors from each producer clients list.
      *
-     * @param producers
+     * @param producers The producers list
      */
     public static void removeBankruptDistributors(final List<Producer> producers) {
         for (Producer iterator : producers) {
@@ -160,8 +161,8 @@ public final class Simulator {
     /**
      * Compute the amount of clients each producer had at then end of a month.
      *
-     * @param currentRoundNo
-     * @param producers
+     * @param currentRoundNo The month number
+     * @param producers The producers list
      */
     public static void saveDistributors(final int currentRoundNo,
                                         final List<Producer> producers) {
