@@ -9,9 +9,6 @@ import java.util.Comparator;
 import java.util.List;
 
 public final class Subject implements CustomObservable {
-    /*
-    * The observers will be all the distributors
-    * */
     private List<Producer> producerList;
 
     public Subject() {
@@ -23,9 +20,7 @@ public final class Subject implements CustomObservable {
 
     @Override
     public void notifyDistributors(List<Distributor> distributorsToBeNotified) {
-        for (Distributor iterator : distributorsToBeNotified) {
-            iterator.update(producerList);
-        }
+        distributorsToBeNotified.forEach((d) -> d.update(producerList));
     }
 
     @Override
@@ -41,7 +36,7 @@ public final class Subject implements CustomObservable {
                     producerIterator
                             .setEnergyPerDistributor(producerChanges.getEnergyPerDistributor());
 
-                    // save the distributor that need to be saved
+                    // save the distributors that need to be notified
                     for (Distributor toBeAdded : producerIterator.getClients()) {
                         if (!distributorsToBeNotified.contains(toBeAdded)) {
                             distributorsToBeNotified.add(toBeAdded);
@@ -51,8 +46,10 @@ public final class Subject implements CustomObservable {
             }
         }
 
+        // sort the distributors by id
         distributorsToBeNotified.sort(Comparator.comparing(Distributor::getId));
 
+        // notify the distributors that a producer has changed it's energy
         notifyDistributors(distributorsToBeNotified);
     }
 

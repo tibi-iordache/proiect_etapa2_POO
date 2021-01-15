@@ -15,9 +15,9 @@ public final class GreenStrategy extends EnergyChoiceStrategy {
         List<Producer> sortedProducers = new ArrayList<Producer>(producers);
 
         // sort the producers by the energy type, then by price, then by the energy provided
-        Collections.sort(sortedProducers, ((Comparator<Producer>) (t1, t2) -> {
-            boolean b1 = t1.getEnergyType().isRenewable();
-            boolean b2 = t2.getEnergyType().isRenewable();
+        Collections.sort(sortedProducers, ((Comparator<Producer>) (p1, p2) -> {
+            boolean b1 = p1.getEnergyType().isRenewable();
+            boolean b2 = p2.getEnergyType().isRenewable();
 
             return Boolean.compare(b2, b1);
         }).thenComparing(Producer::getPriceKW)
