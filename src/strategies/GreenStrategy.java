@@ -8,51 +8,29 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public final class GreenStrategy implements EnergyChoiceStrategy {
+public final class GreenStrategy extends EnergyChoiceStrategy {
     @Override
     public void chooseProducer(final Distributor distributor,
                                final List<Producer> producers) {
+        List<Producer> sortedProducers = new ArrayList<Producer>(producers);
 
-        List<Producer> copyProducers = new ArrayList<Producer>(producers);
+        // sort the producers by the energy type, then by price, then by the energy provided
+        Collections.sort(sortedProducers, ((Comparator<Producer>) (t1, t2) -> {
+            boolean b1 = t1.getEnergyType().isRenewable();
+            boolean b2 = t2.getEnergyType().isRenewable();
 
-        // sort the producers by the energy renewable, then price, then amount of energy
-        Collections.sort(copyProducers, new Comparator<Producer>() {
-            @Override
-            public int compare(Producer t1, Producer t2) {
-                boolean b1 = t1.getEnergyType().isRenewable();
-                boolean b2 = t2.getEnergyType().isRenewable();
+            return Boolean.compare(b2, b1);
+        }).thenComparing(Producer::getPriceKW)
+          .thenComparing(Producer::getEnergyPerDistributor, Comparator.reverseOrder())
+          .thenComparing(Producer::getId));
 
-                return Boolean.compare(b2, b1);
-            }
-        }.thenComparing(Producer::getPriceKW)
-                .thenComparing(Producer::getEnergyPerDistributor, Comparator.reverseOrder())
-                .thenComparing(Producer::getId));
+        // remove the distributor from any producer clients list
+        distributor.getProducers().forEach((p) -> p.getClients().remove(distributor));
 
-        for (Producer p : distributor.getProducers()) {
-            if (p.getClients().contains(distributor)) {
-                p.getClients().remove(distributor);
-            }
-        }
-
+        // clear all the distributor previous producers
         distributor.getProducers().clear();
 
-        double sum = 0;
-
-        for (Producer iterator : copyProducers) {
-            if ((sum < distributor.getEnergyNeededKW())
-                    && (iterator.getMaxDistributors() > iterator.getClients().size())) {
-                // find the corespondend producer from the original list
-                for (Producer original : producers) {
-                    if (original.getId() == iterator.getId()) {
-                        // add the current producer to the distributor list
-                        distributor.getProducers().add(original);
-
-                        original.getClients().add(distributor);
-
-                        sum += original.getEnergyPerDistributor();
-                    }
-                }
-            }
-        }
+        // search for new producers
+        searchNewProducers(distributor, sortedProducers);
     }
 }

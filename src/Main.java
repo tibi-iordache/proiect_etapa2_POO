@@ -36,15 +36,9 @@ public final class Main {
         // read the initial data
         ArrayList<Consumer> consumers = Loader.loadInputConsumers(input);
 
-        consumers.sort(Comparator.comparing(Consumer::getId));
-
         ArrayList<Distributor> distributors = Loader.loadInputDistributors(input);
 
-        distributors.sort(Comparator.comparing(Distributor::getId));
-
         ArrayList<Producer> producers = Loader.loadInputProducers(input);
-
-        producers.sort(Comparator.comparing(Producer::getId));
 
         // start the simulation
         Simulator.startSimulation(input.getNumberOfTurns(),

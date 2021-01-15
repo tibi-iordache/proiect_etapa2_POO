@@ -30,11 +30,6 @@ public final class Simulator {
     }
 
     /**
-     * Returns the only instance of the Simulator
-     * @return
-     */
-
-    /**
      * Starts the simulation, execute each step.
      *
      * @param numberOfTurns The number of rounds
