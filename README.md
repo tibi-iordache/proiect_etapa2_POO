@@ -74,7 +74,7 @@ incapsularea.
 
 ### Design patterns
 
-####Factory & Singleton
+####Factory & Singleton  
  Clasa FactorySingleton se ocupa de instantierea entitatilor, pe baza tipului cerut. Odata cu 
 introducerea producatorilor la aceasta etapa, numarul de campuri total necesar pentru constructia
 fiecarei clase in parte a crescut, asa ca am decis sa fac in asa fel incat metoda createEntity sa 
@@ -93,7 +93,7 @@ va cauta un producator, acestia vor fi sortati dupa tipul energiei/pret/cantitat
 tipul de strategie si se vor alege atatia cati e nevoie pentru a furniza destula energie 
 distributorului.
 
-####Observer
+####Observer  
  Am abordat varianta in care observatorii sunt distributori, iar observable este clasa subiect, 
 care are o lista de producatori. Astfel, atunci cand se vor actualiza valorile producatorilor,
 se va creea o lista cu toti distributorii care trebuie notificati, iar acestia vor fi actualizati
