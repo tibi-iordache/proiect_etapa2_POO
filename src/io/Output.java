@@ -13,6 +13,9 @@ public final class Output {
     * */
     private List<DistributorOutput> distributors;
 
+    /*
+     * List that contains each Producer data after the simulation
+     * */
     private List<ProducerOutput> energyProducers;
 
     public Output() {

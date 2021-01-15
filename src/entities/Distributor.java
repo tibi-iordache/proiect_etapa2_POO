@@ -68,7 +68,6 @@ public final class Distributor extends Entity implements CustomObserver {
                        final int contractLength,
                        final double initialBudget,
                        final double infrastructureCost,
-                       final double productionCost,
                        final double energyNeededKW,
                        final String producerStrategy) {
         super(id, initialBudget);
@@ -76,8 +75,6 @@ public final class Distributor extends Entity implements CustomObserver {
         this.contractLength = contractLength;
 
         this.infrastructureCost = infrastructureCost;
-
-        this.productionCost = productionCost;
 
         this.contractList = new ArrayList<Contract>();
 

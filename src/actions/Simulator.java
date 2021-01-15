@@ -178,18 +178,9 @@ public final class Simulator {
             // add new consumers
             for (ConsumerInput newConsumer : monthUpdate.getNewConsumers()) {
                 consumers.add((Consumer) FactorySingleton
-                         .getInstance().createEntity(CONSUMER, newConsumer.getId(),
-                                                               newConsumer.getInitialBudget(),
-                                                               newConsumer.getMonthlyIncome(),
-                                                               0,
-                                                               0,
-                                                               0,
-                                                                0,
-                                                                null,
-                                                                null,
-                                                                0,
-                                                                0,
-                                                                0));
+                         .getInstance().createEntity(CONSUMER, String.valueOf(newConsumer.getId()),
+                                                   String.valueOf(newConsumer.getInitialBudget()),
+                                                   String.valueOf(newConsumer.getMonthlyIncome())));
             }
 
             // change the distributor prices

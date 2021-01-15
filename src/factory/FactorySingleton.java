@@ -8,7 +8,13 @@ import entities.Producer;
 
 import static utils.Constants.CONSUMER;
 import static utils.Constants.DISTRIBUTOR;
+import static utils.Constants.FIFTH_ARG;
+import static utils.Constants.FIRST_ARG;
+import static utils.Constants.FOURTH_ARG;
 import static utils.Constants.PRODUCER;
+import static utils.Constants.SECOND_ARG;
+import static utils.Constants.SIXTH_ARG;
+import static utils.Constants.THIRD_ARG;
 
 public final class FactorySingleton {
     /*
@@ -19,7 +25,7 @@ public final class FactorySingleton {
     /*
     * Private constructor to respect the singleton pattern
     * */
-    private  FactorySingleton() {
+    private FactorySingleton() {
     }
 
     /**
@@ -39,38 +45,65 @@ public final class FactorySingleton {
      * Create a new entity based on the given type.
      *
      * @param entityType The entity type to be created
-     * @param id The entity id
-     * @param initialBudget The entity initial budget
-     * @param monthlyIncome The monthlyIncome for the consumer type
-     * @param contractLength The contract length for the distributor type
-     * @param initialInfrastructureCost The initial infrastructure cost for the distributor type
-     * @param initialProductionCost The initial production cost for the distributor type
-     * @return The new Entity
+     * @param input Variable args based on the type
+     * @return
      */
     public Entity createEntity(final String entityType,
-                               final int id,
-                               final double initialBudget,
-                               final double monthlyIncome,
-                               final int contractLength,
-                               final double initialInfrastructureCost,
-                               final double initialProductionCost,
-                               final double energyNeededKW,
-                               final String producerStrategy,
-                               final EnergyType energyType,
-                               final double priceKW,
-                               final double energyPerDistributor,
-                               final int maxDistributors) {
-        return switch (entityType) {
-            default -> null;
+                               final String... input) {
+        switch (entityType) {
+            default -> {
+                return null;
+            }
 
-            case CONSUMER -> new Consumer(id, initialBudget, monthlyIncome);
+            case CONSUMER -> {
+                int id = Integer.parseInt(input[FIRST_ARG]);
 
-            case DISTRIBUTOR -> new Distributor(id, contractLength, initialBudget,
-                                                initialInfrastructureCost, initialProductionCost,
-                                                energyNeededKW, producerStrategy);
+                double initialBudged = Double.parseDouble(input[SECOND_ARG]);
 
-            case PRODUCER -> new Producer(id, energyType, priceKW, energyPerDistributor,
-                                            maxDistributors);
-        };
+                double monthlyIncome = Double.parseDouble(input[THIRD_ARG]);
+
+                return new Consumer(id, initialBudged, monthlyIncome);
+            }
+
+
+            case DISTRIBUTOR -> {
+                int id = Integer.parseInt(input[FIRST_ARG]);
+
+                int contractLength = Integer.parseInt(input[SECOND_ARG]);
+
+                double initialBudget = Double.parseDouble(input[THIRD_ARG]);
+
+                double infrastructureCost = Double.parseDouble(input[FOURTH_ARG]);
+
+                double energyNeededKW = Double.parseDouble(input[FIFTH_ARG]);
+
+                String producerStrategy = input[SIXTH_ARG];
+
+                return new Distributor(id,
+                                       contractLength,
+                                       initialBudget,
+                                       infrastructureCost,
+                                       energyNeededKW,
+                                       producerStrategy);
+            }
+
+            case PRODUCER -> {
+                int id = Integer.parseInt(input[FIRST_ARG]);
+
+                EnergyType energyType = EnergyType.valueOf(input[SECOND_ARG]);
+
+                double priceKW = Double.parseDouble(input[THIRD_ARG]);
+
+                double energyPerDistributor = Double.parseDouble(input[FOURTH_ARG]);
+
+                int maxDistributors = Integer.parseInt(input[FIFTH_ARG]);
+
+                return new Producer(id,
+                                    energyType,
+                                    priceKW,
+                                    energyPerDistributor,
+                                    maxDistributors);
+            }
+        }
     }
 }
