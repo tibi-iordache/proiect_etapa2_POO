@@ -77,14 +77,14 @@ public final class FactorySingleton {
 
                 double energyNeededKW = Double.parseDouble(input[FIFTH_ARG]);
 
-                String producerStrategy = input[SIXTH_ARG];
+                String distributorStrategy = input[SIXTH_ARG];
 
                 return new Distributor(id,
                                        contractLength,
                                        initialBudget,
                                        infrastructureCost,
                                        energyNeededKW,
-                                       producerStrategy);
+                                       distributorStrategy);
             }
 
             case PRODUCER -> {

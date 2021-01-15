@@ -6,16 +6,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class Producer extends Entity {
+    /*
+    * The producer energy type
+    * */
     private EnergyType energyType;
 
+    /*
+    * The producer price per KW
+    * */
     private double priceKW;
 
+    /*
+    * The amount of energy given
+    * */
     private double energyPerDistributor;
 
+    /*
+    * The maximum number of clients
+    * */
     private int maxDistributors;
 
     /*
-    * Needed for the output
+    * Monthly stats of the amount of clients (needed for the output)
     * */
     private List<MonthlyStatsOutput> monthlyStats;
 

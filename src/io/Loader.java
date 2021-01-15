@@ -72,7 +72,7 @@ public final class Loader {
             String initialInfrastructureCost = String.valueOf(iterator
                                                               .getInitialInfrastructureCost());
 
-            String producerStrategy = String.valueOf(iterator.getProducerStrategy());
+            String distributorStrategy = String.valueOf(iterator.getProducerStrategy());
 
             String energyNeededKW = String.valueOf(iterator.getEnergyNeededKW());
 
@@ -84,7 +84,7 @@ public final class Loader {
                                                                           initialBudget,
                                                                           initialInfrastructureCost,
                                                                           energyNeededKW,
-                                                                          producerStrategy));
+                                                                          distributorStrategy));
         }
 
         return distributors;
@@ -166,7 +166,7 @@ public final class Loader {
                                                         (int) iterator.getEnergyNeededKW(),
                                                         (int) iterator.getContractPrice(),
                                                         (int) iterator.getBudget(),
-                                                        iterator.getProducerStrategy(),
+                                                        iterator.getDistributorStrategy(),
                                                         iterator.isBankrupt(),
                                                         contractsOutput);
             distributorsOutput.add(d);

@@ -47,9 +47,9 @@ public final class Distributor extends Entity implements CustomObserver {
     private double energyNeededKW;
 
     /*
-    * The distributor strategy (needed for the output)
+    * The distributor strategy as string (needed for the output)
     * */
-    private String producerStrategy;
+    private String distributorStrategy;
 
     /*
     * The current producers of the distributor
@@ -69,7 +69,7 @@ public final class Distributor extends Entity implements CustomObserver {
                        final double initialBudget,
                        final double infrastructureCost,
                        final double energyNeededKW,
-                       final String producerStrategy) {
+                       final String distributorStrategy) {
         super(id, initialBudget);
 
         this.contractLength = contractLength;
@@ -80,39 +80,30 @@ public final class Distributor extends Entity implements CustomObserver {
 
         this.energyNeededKW = energyNeededKW;
 
-        this.producerStrategy = producerStrategy;
+        this.distributorStrategy = distributorStrategy;
 
         this.producers = new ArrayList<Producer>();
 
-        if (EnergyChoiceStrategyType.valueOf(producerStrategy)
-                .equals(EnergyChoiceStrategyType.GREEN)) {
+        if (EnergyChoiceStrategyType.valueOf(distributorStrategy)
+                                    .equals(EnergyChoiceStrategyType.GREEN)) {
             this.strategy = new GreenStrategy();
-        }
-
-        if (EnergyChoiceStrategyType.valueOf(producerStrategy)
-                .equals(EnergyChoiceStrategyType.PRICE)) {
+        } else if (EnergyChoiceStrategyType.valueOf(distributorStrategy)
+                                           .equals(EnergyChoiceStrategyType.PRICE)) {
             this.strategy = new PriceStrategy();
-        }
-
-        if (EnergyChoiceStrategyType.valueOf(producerStrategy)
-                .equals(EnergyChoiceStrategyType.QUANTITY)) {
+        } else {
             this.strategy = new QuantityStrategy();
         }
     }
 
     /**
-     * TODO
+     * Reapplies the distributor strategy
      *
-     * @param producersList
+     * @param producersList The producers to choose from
      */
     public void executeStrategy(List<Producer> producersList) {
         this.strategy.chooseProducer(this, producersList);
     }
 
-    /**
-     * TODO
-     * @param producersList
-     */
     @Override
     public void update(List<Producer> producersList) {
         if (!isBankrupt) {
@@ -176,12 +167,12 @@ public final class Distributor extends Entity implements CustomObserver {
         this.energyNeededKW = energyNeededKW;
     }
 
-    public String getProducerStrategy() {
-        return producerStrategy;
+    public String getDistributorStrategy() {
+        return distributorStrategy;
     }
 
-    public void setProducerStrategy(final String producerStrategy) {
-        this.producerStrategy = producerStrategy;
+    public void setDistributorStrategy(final String distributorStrategy) {
+        this.distributorStrategy = distributorStrategy;
     }
 
     public List<Producer> getProducers() {
